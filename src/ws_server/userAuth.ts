@@ -14,7 +14,7 @@ const userAuth = (requestsObj: IReqReq) => {
       name: requestsObj.data.name,
       password: generateHash(requestsObj.data.password),
     });
-    userIndex = users.length;
+    userIndex = users.length - 1;
     isError = false;
     errorText = '';
   } else {

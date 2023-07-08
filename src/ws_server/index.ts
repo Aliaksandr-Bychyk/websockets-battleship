@@ -1,6 +1,7 @@
 import deepParser from '../utils/deepParser';
 import { WebSocketServer } from 'ws';
 import userAuth from './userAuth';
+import gameRoom from './gameRoom';
 
 const initWebSocet = () => {
   const WS_SERVER = new WebSocketServer({ port: 3000 });
@@ -13,7 +14,12 @@ const initWebSocet = () => {
       if (requestsObj.type === 'reg') {
         const response = userAuth(requestsObj);
         ws.send(JSON.stringify(response));
-      } /*else {
+      }
+      if (requestsObj.type === 'create_room') {
+        const response = gameRoom(requestsObj);
+        ws.send(JSON.stringify(response));
+      }
+      /*else {
         ws.send(
           JSON.stringify({
             type: 'create_game',
