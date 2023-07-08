@@ -1,14 +1,23 @@
 import IReqCreateRoom from '../interfaces/IReqCreateRoom';
-import games from './games';
+import rooms from './rooms';
+import users from './users';
 
-const gameRoom = (requestsObj: IReqCreateRoom) => {
-  games.push({ index: games.length });
+const gameRoom = (requestsObj: IReqCreateRoom, socketID: number) => {
+  rooms.push({ index: rooms.length });
+  const user = users.filter((user) => user.index === socketID)[0];
   return {
-    type: 'create_game',
-    data: JSON.stringify({
-      idGame: games.length - 1,
-      idPlayer: 0,
-    }),
+    type: 'update_room',
+    data: JSON.stringify([
+      {
+        roomId: rooms.length - 1,
+        roomUsers: [
+          {
+            name: user?.name,
+            index: user?.index,
+          },
+        ],
+      },
+    ]),
     id: 0,
   };
 };

@@ -2,7 +2,7 @@ import IReqReq from '../interfaces/IReqReq';
 import generateHash from '../utils/generateHash';
 import users from './users';
 
-const userAuth = (requestsObj: IReqReq) => {
+const userAuth = (requestsObj: IReqReq, socketID: number) => {
   const user = users.filter((user) => user.name === requestsObj.data.name)[0];
   let userIndex: number;
   let isError: boolean;
@@ -10,18 +10,19 @@ const userAuth = (requestsObj: IReqReq) => {
 
   if (!user) {
     users.push({
-      index: users.length,
+      index: socketID,
       name: requestsObj.data.name,
       password: generateHash(requestsObj.data.password),
     });
-    userIndex = users.length - 1;
+    userIndex = socketID;
     isError = false;
     errorText = '';
   } else {
-    userIndex = user.index;
+    userIndex = socketID;
     if (user.password === generateHash(requestsObj.data.password)) {
       isError = false;
       errorText = '';
+      user.index = socketID;
     } else {
       isError = true;
       errorText = 'Wrong password';
