@@ -1,3 +1,6 @@
+import IUser from './IUser';
+
 export default interface IRoom {
-  index: number;
+  roomId: number;
+  roomUsers: IUser[];
 }
