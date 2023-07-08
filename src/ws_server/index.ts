@@ -36,7 +36,7 @@ const initWebSocet = () => {
         const response = gameAddUserToRoom(requestsObj, currentSocketID);
         WS_SERVER.clients.forEach((client) => {
           sockets.forEach((socket, key) => {
-            if ((key === response.data.idGame || key === response.data.idPlayer) && socket === client) {
+            if ((key === response.data.idPlayer || ws == client) && socket === client) {
               client.send(generateResponse(response));
             }
           });

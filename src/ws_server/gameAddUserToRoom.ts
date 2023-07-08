@@ -1,6 +1,6 @@
 import IReqAddUserToRoom from '../interfaces/IReqAddUserToRoom';
 import rooms from './rooms';
-import IUser from '../interfaces/IUser';
+import games from './games';
 
 const gameAddUserToRoom = (requestsObj: IReqAddUserToRoom, socketID: number) => {
   const clientRoom = rooms.filter((room) => room.roomId === socketID)[0];
@@ -11,11 +11,12 @@ const gameAddUserToRoom = (requestsObj: IReqAddUserToRoom, socketID: number) => 
   if (hostRoom) {
     rooms.splice(rooms.indexOf(hostRoom), 1);
   }
+  games.push({ idGame: socketID });
   return {
     type: 'create_game',
     data: {
-      idGame: (hostRoom?.roomUsers[0] as IUser).index,
-      idPlayer: socketID,
+      idGame: socketID,
+      idPlayer: hostRoom?.roomUsers[0]?.index,
     },
     id: 0,
   };
