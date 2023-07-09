@@ -12,4 +12,5 @@ export default interface IGame {
   hostId: number;
   clientId: number;
   data: data;
+  turn?: number;
 }

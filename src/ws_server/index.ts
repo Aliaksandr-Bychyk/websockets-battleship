@@ -55,8 +55,10 @@ const initWebSocet = () => {
           handler: () => {
             const game = addShipsHandler(reqObj);
             if (game) {
-              const response = generateResponse('start_game', game);
-              resToHostClient(WS_SERVER, sockets, game, response);
+              const responseStartGame = generateResponse('start_game', game);
+              resToHostClient(WS_SERVER, sockets, game, responseStartGame);
+              const responseTurn = generateResponse('turn_init', game);
+              resToHostClient(WS_SERVER, sockets, game, responseTurn);
             }
           },
         },

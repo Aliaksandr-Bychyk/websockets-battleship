@@ -1,6 +1,6 @@
 import IGame from '../../interfaces/IGame';
 
-const generateResponse = (type: 'create_game' | 'start_game', game: IGame) => {
+const generateResponse = (type: 'create_game' | 'start_game' | 'turn' | 'turn_init', game: IGame) => {
   let hostResponse = '';
   let clientResponse = '';
   if (type === 'create_game') {
@@ -32,6 +32,22 @@ const generateResponse = (type: 'create_game' | 'start_game', game: IGame) => {
       }),
       id: 0,
     });
+  }
+  if (type === 'turn_init') {
+    game.turn = game.data.map((user) => user.indexPlayer)[Math.floor(Math.random())];
+  }
+  if (type === 'turn') {
+    game.turn = game.data.filter((user) => user.indexPlayer !== game.turn)[0]?.indexPlayer;
+  }
+  if (type === 'turn' || type === 'turn_init') {
+    hostResponse = JSON.stringify({
+      type: 'turn',
+      data: JSON.stringify({
+        currentPlayer: game.turn,
+      }),
+      id: 0,
+    });
+    clientResponse = hostResponse;
   }
   return {
     host: hostResponse,
