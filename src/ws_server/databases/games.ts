@@ -1,4 +1,4 @@
-import IGame from '../interfaces/IGame';
+import IGame from '../../interfaces/IGame';
 
 const games: IGame[] = [];
 

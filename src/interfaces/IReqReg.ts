@@ -1,4 +1,4 @@
-export default interface IReqReq {
+export default interface IReqReg {
   type: 'reg';
   data: {
     name: string;

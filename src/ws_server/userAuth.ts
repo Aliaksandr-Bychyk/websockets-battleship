@@ -1,6 +1,6 @@
-import IReqReq from '../interfaces/IReqReq';
+import IReqReq from '../interfaces/IReqReg';
 import generateHash from '../utils/generateHash';
-import users from './users';
+import users from './databases/users';
 
 const userAuth = (requestsObj: IReqReq, socketID: number) => {
   const user = users.filter((user) => user.name === requestsObj.data.name)[0];

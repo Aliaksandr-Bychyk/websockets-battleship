@@ -1,8 +1,9 @@
-import rooms from './rooms';
-import users from './users';
+import IReq from '../../interfaces/IReq';
+import rooms from '../databases/rooms';
+import users from '../databases/users';
 
-const gameRoom = (socketID?: number) => {
-  if (socketID !== undefined) {
+const createRoomHandler = (reqObj: IReq, socketID: number) => {
+  if (reqObj.type === 'create_room') {
     const room = rooms.filter((room) => room.roomId === socketID)[0];
     if (!room) {
       const user = users.filter((user) => user.index === socketID)[0];
@@ -18,11 +19,6 @@ const gameRoom = (socketID?: number) => {
       rooms.push(data);
     }
   }
-  return {
-    type: 'update_room',
-    data: JSON.stringify(rooms),
-    id: 0,
-  };
 };
 
-export default gameRoom;
+export default createRoomHandler;

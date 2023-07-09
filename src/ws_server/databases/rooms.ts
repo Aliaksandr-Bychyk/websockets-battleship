@@ -1,4 +1,4 @@
-import IRoom from '../interfaces/IRoom';
+import IRoom from '../../interfaces/IRoom';
 
 const rooms: IRoom[] = [];
 
