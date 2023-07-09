@@ -46,9 +46,11 @@ const initWebSocet = () => {
           type: 'add_user_to_room',
           handler: () => {
             const gameInitData = addUserToRoomHandler(reqObj, currentSocketID) as IGameInitData;
-            createGameHandler(gameInitData);
-            updateRoomHandler(WS_SERVER);
-            resToHostClient(WS_SERVER, sockets, gameInitData);
+            if (gameInitData) {
+              createGameHandler(gameInitData);
+              updateRoomHandler(WS_SERVER);
+              resToHostClient(WS_SERVER, sockets, gameInitData);
+            }
           },
         },
       ];
