@@ -1,11 +1,5 @@
 import deepParser from '../utils/deepParser';
 import { WebSocket, WebSocketServer } from 'ws';
-// import userAuth from './userAuth';
-// import gameRoom from './gameRoom';
-// import gameShips from './gameShips';
-// import gameAddUserToRoom from './gameAddUserToRoom';
-// import games from './games';
-// import util from 'node:util';
 import regHandler from './request_handlers/regHandler';
 import IREquestType from '../interfaces/IRequestType';
 import IReq from '../interfaces/IReq';
@@ -15,6 +9,8 @@ import addUserToRoomHandler from './request_handlers/addUserToRoomHandler';
 import createGameHandler from './request_handlers/createGameHandler';
 import IGameInitData from 'interfaces/IGameInitData';
 import resToHostClient from './responce_handlers/resToHostClient';
+import addShipsHandler from './request_handlers/addShipsHandler';
+import generateResponse from './responce_handlers/generateResponse';
 
 const sockets = new Map<number, WebSocket>();
 let socketID = 0;
@@ -47,9 +43,20 @@ const initWebSocet = () => {
           handler: () => {
             const gameInitData = addUserToRoomHandler(reqObj, currentSocketID) as IGameInitData;
             if (gameInitData) {
-              createGameHandler(gameInitData);
+              const game = createGameHandler(gameInitData);
               updateRoomHandler(WS_SERVER);
-              resToHostClient(WS_SERVER, sockets, gameInitData);
+              const response = generateResponse('create_game', game);
+              resToHostClient(WS_SERVER, sockets, game, response);
+            }
+          },
+        },
+        {
+          type: 'add_ships',
+          handler: () => {
+            const game = addShipsHandler(reqObj);
+            if (game) {
+              const response = generateResponse('start_game', game);
+              resToHostClient(WS_SERVER, sockets, game, response);
             }
           },
         },
@@ -60,32 +67,6 @@ const initWebSocet = () => {
           req.handler();
         }
       });
-      // if (requestsObj.type === 'add_ships') {
-      //   console.log(games[0]);
-      //   gameShips(requestsObj);
-      //   const playerIndexes: number[] = games
-      //     .filter((game) => game.idGame === requestsObj.data.gameId)[0]
-      //     ?.data.map((el) => el.indexPlayer) as number[];
-      //   console.log(util.inspect(playerIndexes, false, null, true));
-      //   if (playerIndexes) {
-      //     if (playerIndexes.length === 2) {
-      //       WS_SERVER.clients.forEach((client) => {
-      //         sockets.forEach((socket, key) => {
-      //           if ((playerIndexes[0] === key || playerIndexes[1] === key) && socket === client) {
-      //             client.send(
-      //               JSON.stringify({
-      //                 type: 'start_game',
-      //                 data: JSON.stringify({ ships: requestsObj.data.ships, currentPlayerIndex: key }),
-      //                 id: 0,
-      //               }),
-      //             );
-      //           }
-      //         });
-      //         client.send(JSON.stringify(gameRoom()));
-      //       });
-      //     }
-      //   }
-      // }
     });
   });
 };

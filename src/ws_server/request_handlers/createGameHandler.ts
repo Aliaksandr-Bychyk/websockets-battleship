@@ -4,8 +4,12 @@ import games from '../databases/games';
 const createGameHandler = (data: IGameInitData) => {
   const newGame = {
     idGame: data.host,
+    hostId: data.host,
+    clientId: data.client,
+    data: [],
   };
   games.push(newGame);
+  return newGame;
 };
 
 export default createGameHandler;

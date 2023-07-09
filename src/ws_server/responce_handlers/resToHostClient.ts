@@ -1,26 +1,22 @@
-import IGameInitData from 'interfaces/IGameInitData';
+import IGame from '../../interfaces/IGame';
 import WebSocket from 'ws';
 
-const resToHostClient = (server: WebSocket.Server, sockets: Map<number, WebSocket>, gameInitData: IGameInitData) => {
+const resToHostClient = (
+  server: WebSocket.Server,
+  sockets: Map<number, WebSocket>,
+  game: IGame,
+  resonse: {
+    host: string;
+    client: string;
+  },
+) => {
   server.clients.forEach((client) => {
     sockets.forEach((socket, key) => {
-      if (gameInitData.host === key && socket === client) {
-        client.send(
-          JSON.stringify({
-            type: 'create_game',
-            data: JSON.stringify({ idGame: gameInitData.host, idPlayer: gameInitData.host }),
-            id: 0,
-          }),
-        );
+      if (game.hostId === key && socket === client) {
+        client.send(resonse.host);
       }
-      if (gameInitData.client === key && socket === client) {
-        client.send(
-          JSON.stringify({
-            type: 'create_game',
-            data: JSON.stringify({ idGame: gameInitData.host, idPlayer: gameInitData.client }),
-            id: 0,
-          }),
-        );
+      if (game.clientId === key && socket === client) {
+        client.send(resonse.client);
       }
     });
   });
