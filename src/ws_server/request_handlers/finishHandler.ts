@@ -1,3 +1,4 @@
+import users from '../databases/users';
 import IReq from '../../interfaces/IReq';
 import games from '../databases/games';
 
@@ -6,7 +7,11 @@ const finishHandler = (reqObj: IReq) => {
     const game = games.filter((game) => game.idGame === reqObj.data.gameId)[0];
     const ships = game.data.filter((user) => user.indexPlayer !== reqObj.data.indexPlayer)[0].ships;
     if (ships.length === ships.reduce((acc, ship) => (ship.isKilled ? acc + 1 : acc), 0)) {
-      games.splice(games.indexOf(games.filter((game) => game.idGame === reqObj.data.gameId)[0]), 1);
+      const user = users.filter((user) => user.index === reqObj.data.indexPlayer)[0];
+      if (user.wins !== undefined) {
+        user.wins = user.wins + 1;
+      }
+      games.splice(games.indexOf(game), 1);
       return {
         game,
         response: JSON.stringify({

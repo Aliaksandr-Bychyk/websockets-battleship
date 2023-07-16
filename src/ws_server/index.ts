@@ -14,6 +14,7 @@ import generateResponse from './responce_handlers/generateResponse';
 import attackHandler from './request_handlers/attackHandler';
 import randomAttackHandler from './request_handlers/randomAttackHandler';
 import finishHandler from './request_handlers/finishHandler';
+import updateWinners from './request_handlers/updateWinners';
 
 const sockets = new Map<number, WebSocket>();
 let socketID = 0;
@@ -29,6 +30,7 @@ const attack = (WS_SERVER: WebSocketServer, reqObj: IReq) => {
   if (response) {
     resToHostClient(WS_SERVER, sockets, response.game, response.response, response.response);
   }
+  updateWinners(WS_SERVER);
 };
 
 const initWebSocet = () => {
@@ -45,6 +47,7 @@ const initWebSocet = () => {
           handler: () => {
             regHandler(ws, reqObj, currentSocketID);
             updateRoomHandler(WS_SERVER);
+            updateWinners(WS_SERVER);
           },
         },
         {

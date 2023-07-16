@@ -13,6 +13,7 @@ const userAuth = (requestsObj: IReqReq, socketID: number) => {
       index: socketID,
       name: requestsObj.data.name,
       password: generateHash(requestsObj.data.password),
+      wins: 0,
     });
     userIndex = socketID;
     isError = false;
