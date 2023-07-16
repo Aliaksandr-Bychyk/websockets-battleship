@@ -5,18 +5,16 @@ const resToHostClient = (
   server: WebSocket.Server,
   sockets: Map<number, WebSocket>,
   game: IGame,
-  resonse: {
-    host: string;
-    client: string;
-  },
+  responseForHost: string,
+  responseForClient: string,
 ) => {
   server.clients.forEach((client) => {
     sockets.forEach((socket, key) => {
       if (game.hostId === key && socket === client) {
-        client.send(resonse.host);
+        client.send(responseForHost);
       }
       if (game.clientId === key && socket === client) {
-        client.send(resonse.client);
+        client.send(responseForClient);
       }
     });
   });

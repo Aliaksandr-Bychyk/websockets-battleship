@@ -6,4 +6,5 @@ export default interface IShip {
   direction: boolean;
   length: number;
   type: 'small' | 'medium' | 'large' | 'huge';
+  shipCells?: { x: number; y: number; status: 1 | 3 | 4 }[];
 }

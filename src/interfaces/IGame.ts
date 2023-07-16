@@ -4,6 +4,7 @@ type data =
   | {
       indexPlayer: number;
       ships: IShip[];
+      grid: number[][];
     }[]
   | [];
 

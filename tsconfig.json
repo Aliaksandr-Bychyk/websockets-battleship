@@ -10,7 +10,6 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "lib": ["ESNext"],
-    "noUncheckedIndexedAccess": true,
     "strictNullChecks": true,
     "removeComments": true,
     "resolveJsonModule": true,

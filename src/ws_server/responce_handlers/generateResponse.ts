@@ -34,7 +34,7 @@ const generateResponse = (type: 'create_game' | 'start_game' | 'turn' | 'turn_in
     });
   }
   if (type === 'turn_init') {
-    game.turn = game.data.map((user) => user.indexPlayer)[Math.floor(Math.random())];
+    game.turn = game.data.map((user) => user.indexPlayer)[Math.floor(Math.random() * 2)];
   }
   if (type === 'turn') {
     game.turn = game.data.filter((user) => user.indexPlayer !== game.turn)[0]?.indexPlayer;

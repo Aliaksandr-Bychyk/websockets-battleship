@@ -11,6 +11,7 @@ import IGameInitData from 'interfaces/IGameInitData';
 import resToHostClient from './responce_handlers/resToHostClient';
 import addShipsHandler from './request_handlers/addShipsHandler';
 import generateResponse from './responce_handlers/generateResponse';
+import attackHandler from './request_handlers/attackHandler';
 
 const sockets = new Map<number, WebSocket>();
 let socketID = 0;
@@ -46,7 +47,7 @@ const initWebSocet = () => {
               const game = createGameHandler(gameInitData);
               updateRoomHandler(WS_SERVER);
               const response = generateResponse('create_game', game);
-              resToHostClient(WS_SERVER, sockets, game, response);
+              resToHostClient(WS_SERVER, sockets, game, response.host, response.client);
             }
           },
         },
@@ -56,9 +57,20 @@ const initWebSocet = () => {
             const game = addShipsHandler(reqObj);
             if (game) {
               const responseStartGame = generateResponse('start_game', game);
-              resToHostClient(WS_SERVER, sockets, game, responseStartGame);
+              resToHostClient(WS_SERVER, sockets, game, responseStartGame.host, responseStartGame.client);
               const responseTurn = generateResponse('turn_init', game);
-              resToHostClient(WS_SERVER, sockets, game, responseTurn);
+              resToHostClient(WS_SERVER, sockets, game, responseTurn.host, responseTurn.client);
+            }
+          },
+        },
+        {
+          type: 'attack',
+          handler: () => {
+            const { game, responses } = attackHandler(reqObj);
+            if (game && responses) {
+              responses.forEach((response) => resToHostClient(WS_SERVER, sockets, game, response, response));
+              const responseTurn = generateResponse('turn', game);
+              resToHostClient(WS_SERVER, sockets, game, responseTurn.host, responseTurn.client);
             }
           },
         },
