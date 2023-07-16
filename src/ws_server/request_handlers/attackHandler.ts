@@ -37,13 +37,11 @@ const attackHandler = (reqObj: IReq) => {
       const grid = game.data.filter((user) => user.indexPlayer !== reqObj.data.indexPlayer)[0].grid;
 
       const targetCell = grid[reqObj.data.y][reqObj.data.x];
-      console.log('targetCell', targetCell);
       if (targetCell === 0) {
         grid[reqObj.data.y][reqObj.data.x] = 2;
         responses.push(generateResponse(reqObj.data.x, reqObj.data.y, reqObj.data.indexPlayer, 'miss'));
       }
       if (targetCell === 1) {
-        console.log('if 1');
         const shipsCells = game.data
           .filter((user) => user.indexPlayer !== reqObj.data.indexPlayer)[0]
           .ships.map((ship) => ship.shipCells);
@@ -55,12 +53,9 @@ const attackHandler = (reqObj: IReq) => {
           .flat();
         const cell = shipCells.filter((cell) => cell && cell.x === reqObj.data.x && cell.y === reqObj.data.y)[0];
         if (cell && cell.status === 1) {
-          console.log('if 2');
           if (shipCells.filter((cell) => cell?.status === 3).length === shipCells.length - 1) {
-            console.log('if 3');
             shipCells.forEach((cell) => {
               if (cell) {
-                console.log('if 4');
                 cell.status = 4;
                 grid[cell.y][cell.x] = 4;
                 responses.push(generateResponse(cell.x, cell.y, reqObj.data.indexPlayer, 'killed'));

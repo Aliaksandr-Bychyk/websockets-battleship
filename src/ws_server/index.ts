@@ -12,9 +12,19 @@ import resToHostClient from './responce_handlers/resToHostClient';
 import addShipsHandler from './request_handlers/addShipsHandler';
 import generateResponse from './responce_handlers/generateResponse';
 import attackHandler from './request_handlers/attackHandler';
+import randomAttackHandler from './request_handlers/randomAttackHandler';
 
 const sockets = new Map<number, WebSocket>();
 let socketID = 0;
+
+const attack = (WS_SERVER: WebSocketServer, reqObj: IReq) => {
+  const { game, responses } = attackHandler(reqObj);
+  if (game && responses) {
+    responses.forEach((response) => resToHostClient(WS_SERVER, sockets, game, response, response));
+    const responseTurn = generateResponse('turn', game);
+    resToHostClient(WS_SERVER, sockets, game, responseTurn.host, responseTurn.client);
+  }
+};
 
 const initWebSocet = () => {
   const WS_SERVER = new WebSocketServer({ port: 3000 });
@@ -66,11 +76,15 @@ const initWebSocet = () => {
         {
           type: 'attack',
           handler: () => {
-            const { game, responses } = attackHandler(reqObj);
-            if (game && responses) {
-              responses.forEach((response) => resToHostClient(WS_SERVER, sockets, game, response, response));
-              const responseTurn = generateResponse('turn', game);
-              resToHostClient(WS_SERVER, sockets, game, responseTurn.host, responseTurn.client);
+            attack(WS_SERVER, reqObj);
+          },
+        },
+        {
+          type: 'randomAttack',
+          handler: () => {
+            const newReqObj = randomAttackHandler(reqObj);
+            if (newReqObj) {
+              attack(WS_SERVER, newReqObj);
             }
           },
         },
