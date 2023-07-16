@@ -28,6 +28,7 @@ function generateShipCells(ships: IShip[]) {
         status: 1,
       });
     }
+    ship.isKilled = false;
     return ship;
   });
 }

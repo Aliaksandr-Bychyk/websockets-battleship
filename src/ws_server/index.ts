@@ -13,6 +13,7 @@ import addShipsHandler from './request_handlers/addShipsHandler';
 import generateResponse from './responce_handlers/generateResponse';
 import attackHandler from './request_handlers/attackHandler';
 import randomAttackHandler from './request_handlers/randomAttackHandler';
+import finishHandler from './request_handlers/finishHandler';
 
 const sockets = new Map<number, WebSocket>();
 let socketID = 0;
@@ -23,6 +24,10 @@ const attack = (WS_SERVER: WebSocketServer, reqObj: IReq) => {
     responses.forEach((response) => resToHostClient(WS_SERVER, sockets, game, response, response));
     const responseTurn = generateResponse('turn', game);
     resToHostClient(WS_SERVER, sockets, game, responseTurn.host, responseTurn.client);
+  }
+  const response = finishHandler(reqObj);
+  if (response) {
+    resToHostClient(WS_SERVER, sockets, response.game, response.response, response.response);
   }
 };
 

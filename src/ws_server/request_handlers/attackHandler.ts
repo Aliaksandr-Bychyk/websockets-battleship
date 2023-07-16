@@ -42,28 +42,29 @@ const attackHandler = (reqObj: IReq) => {
         responses.push(generateResponse(reqObj.data.x, reqObj.data.y, reqObj.data.indexPlayer, 'miss'));
       }
       if (targetCell === 1) {
-        const shipsCells = game.data
-          .filter((user) => user.indexPlayer !== reqObj.data.indexPlayer)[0]
-          .ships.map((ship) => ship.shipCells);
-        const shipCells = shipsCells
-          .filter((ship) => {
-            const currShip = ship?.filter((cells) => cells.y === reqObj.data.y && cells.x === reqObj.data.x);
-            return currShip && currShip?.length > 0;
-          })
-          .flat();
-        const cell = shipCells.filter((cell) => cell && cell.x === reqObj.data.x && cell.y === reqObj.data.y)[0];
+        const ships = game.data.filter((user) => user.indexPlayer !== reqObj.data.indexPlayer)[0].ships;
+        const ship = ships.filter((ship) => {
+          const curShip = ship.shipCells?.filter((cells) => cells.y === reqObj.data.y && cells.x === reqObj.data.x);
+          return curShip && curShip?.length > 0;
+        })[0];
+        const cell = ship.shipCells?.filter((cell) => cell && cell.x === reqObj.data.x && cell.y === reqObj.data.y)[0];
         if (cell && cell.status === 1) {
-          if (shipCells.filter((cell) => cell?.status === 3).length === shipCells.length - 1) {
-            shipCells.forEach((cell) => {
+          if (
+            ship.shipCells &&
+            ship.shipCells.filter((cell) => cell?.status === 3).length === ship.shipCells.length - 1
+          ) {
+            ship.shipCells.forEach((cell) => {
               if (cell) {
                 cell.status = 4;
                 grid[cell.y][cell.x] = 4;
                 responses.push(generateResponse(cell.x, cell.y, reqObj.data.indexPlayer, 'killed'));
-                getCellAround(grid, cell.y, cell.x).forEach((cell) =>
-                  responses.push(generateResponse(cell.x, cell.y, reqObj.data.indexPlayer, 'miss')),
-                );
+                getCellAround(grid, cell.y, cell.x).forEach((cell) => {
+                  grid[cell.y][cell.x] = 2;
+                  responses.push(generateResponse(cell.x, cell.y, reqObj.data.indexPlayer, 'miss'));
+                });
               }
             });
+            ship.isKilled = true;
           } else {
             cell.status = 3;
             grid[reqObj.data.y][reqObj.data.x] = 3;
