@@ -9,15 +9,21 @@ const userAuth = (requestsObj: IReqReq, socketID: number) => {
   let errorText: string;
 
   if (!user) {
-    users.push({
-      index: socketID,
-      name: requestsObj.data.name,
-      password: generateHash(requestsObj.data.password),
-      wins: 0,
-    });
     userIndex = socketID;
-    isError = false;
-    errorText = '';
+    if (!/^[a-zA-Z\-]+$/.test(requestsObj.data.name)) {
+      isError = true;
+      errorText = 'Name must contain only letters';
+    } else {
+      users.push({
+        index: socketID,
+        name: requestsObj.data.name,
+        password: generateHash(requestsObj.data.password),
+        wins: 0,
+      });
+      userIndex = socketID;
+      isError = false;
+      errorText = '';
+    }
   } else {
     userIndex = socketID;
     if (user.password === generateHash(requestsObj.data.password)) {
