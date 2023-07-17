@@ -12,7 +12,7 @@ const addUserToRoomHandler = (reqObj: IReq, socketID: number) => {
       if (hostRoom) {
         rooms.splice(rooms.indexOf(hostRoom), 1);
       }
-      return { host: reqObj.data.indexRoom, client: socketID };
+      return { host: reqObj.data.indexRoom, client: socketID, isOnline: true };
     }
   }
 };

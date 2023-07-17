@@ -14,4 +14,5 @@ export default interface IGame {
   clientId: number;
   data: data;
   turn?: number;
+  isOnline: boolean;
 }

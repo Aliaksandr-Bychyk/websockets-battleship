@@ -7,6 +7,7 @@ const createGameHandler = (data: IGameInitData) => {
     hostId: data.host,
     clientId: data.client,
     data: [],
+    isOnline: data.isOnline,
   };
   games.push(newGame);
   return newGame;

@@ -52,6 +52,9 @@ const generateResponse = (type: 'create_game' | 'start_game' | 'turn' | 'turn_in
   return {
     host: hostResponse,
     client: clientResponse,
+    hostId: game.hostId,
+    clienId: game.clientId,
+    isOnline: game.isOnline,
   };
 };
 

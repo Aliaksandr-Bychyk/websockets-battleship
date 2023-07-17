@@ -19,18 +19,32 @@ import updateWinners from './request_handlers/updateWinners';
 const sockets = new Map<number, WebSocket>();
 let socketID = 0;
 
-const attack = (WS_SERVER: WebSocketServer, reqObj: IReq) => {
+const attack = (WS_SERVER: WebSocketServer, reqObj: IReq, ws: WebSocket) => {
   const { game, responses } = attackHandler(reqObj);
   if (game && responses) {
     responses.forEach((response) => resToHostClient(WS_SERVER, sockets, game, response, response));
     const responseTurn = generateResponse('turn', game);
     resToHostClient(WS_SERVER, sockets, game, responseTurn.host, responseTurn.client);
+    const response = finishHandler(reqObj);
+    if (response) {
+      resToHostClient(WS_SERVER, sockets, response.game, response.response, response.response);
+      updateWinners(WS_SERVER);
+    } else if (!game.isOnline && game.turn === responseTurn.clienId) {
+      setTimeout(() => {
+        ws.emit(
+          'message',
+          JSON.stringify({
+            type: 'randomAttack',
+            data: JSON.stringify({
+              gameId: game?.idGame,
+              indexPlayer: -1,
+            }),
+            id: 0,
+          }),
+        );
+      }, 1000);
+    }
   }
-  const response = finishHandler(reqObj);
-  if (response) {
-    resToHostClient(WS_SERVER, sockets, response.game, response.response, response.response);
-  }
-  updateWinners(WS_SERVER);
 };
 
 const initWebSocet = () => {
@@ -38,6 +52,10 @@ const initWebSocet = () => {
   WS_SERVER.on('connection', (ws) => {
     const currentSocketID = socketID++;
     sockets.set(currentSocketID, ws);
+
+    ws.on('close', () => {
+      console.log('exit');
+    });
 
     ws.on('message', (reqData) => {
       const reqObj: IReq = deepParser(reqData.toString());
@@ -78,13 +96,26 @@ const initWebSocet = () => {
               resToHostClient(WS_SERVER, sockets, game, responseStartGame.host, responseStartGame.client);
               const responseTurn = generateResponse('turn_init', game);
               resToHostClient(WS_SERVER, sockets, game, responseTurn.host, responseTurn.client);
+              if (!game.isOnline && game.turn === responseTurn.clienId) {
+                ws.emit(
+                  'message',
+                  JSON.stringify({
+                    type: 'randomAttack',
+                    data: JSON.stringify({
+                      gameId: game?.idGame,
+                      indexPlayer: game?.clientId,
+                    }),
+                    id: 0,
+                  }),
+                );
+              }
             }
           },
         },
         {
           type: 'attack',
           handler: () => {
-            attack(WS_SERVER, reqObj);
+            attack(WS_SERVER, reqObj, ws);
           },
         },
         {
@@ -92,8 +123,16 @@ const initWebSocet = () => {
           handler: () => {
             const newReqObj = randomAttackHandler(reqObj);
             if (newReqObj) {
-              attack(WS_SERVER, newReqObj);
+              attack(WS_SERVER, newReqObj, ws);
             }
+          },
+        },
+        {
+          type: 'single_play',
+          handler: () => {
+            const game = createGameHandler({ host: currentSocketID, client: -1, isOnline: false });
+            const response = generateResponse('create_game', game);
+            resToHostClient(WS_SERVER, sockets, game, response.host, response.client);
           },
         },
       ];
