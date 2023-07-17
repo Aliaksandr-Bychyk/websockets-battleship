@@ -15,6 +15,7 @@ import attackHandler from './request_handlers/attackHandler';
 import randomAttackHandler from './request_handlers/randomAttackHandler';
 import finishHandler from './request_handlers/finishHandler';
 import updateWinners from './request_handlers/updateWinners';
+import wsCloseHandler from './request_handlers/wsCloseHandler';
 
 const sockets = new Map<number, WebSocket>();
 let socketID = 0;
@@ -54,7 +55,24 @@ const initWebSocet = () => {
     sockets.set(currentSocketID, ws);
 
     ws.on('close', () => {
-      console.log('exit');
+      const game = wsCloseHandler(ws, currentSocketID);
+      if (game) {
+        const response = finishHandler({
+          type: 'attack',
+          data: {
+            gameId: game.idGame,
+            x: 0,
+            y: 0,
+            indexPlayer: game.clientId === currentSocketID ? game.hostId : game.clientId,
+          },
+          id: 0,
+        });
+        if (response) {
+          resToHostClient(WS_SERVER, sockets, response.game, response.response, response.response);
+        }
+      }
+      updateRoomHandler(WS_SERVER);
+      updateWinners(WS_SERVER);
     });
 
     ws.on('message', (reqData) => {
